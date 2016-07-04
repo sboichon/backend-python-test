@@ -32,9 +32,9 @@ Credentials:
 ```sh
 virtualenv .
 bin/pip install -r requirements.txt
-bin/python main.py initdb
-bin/. environ-dev.sh
-bin/flask run
+bin/python manage.py db upgrade
+bin/python manage.py create_fixtures
+bin/python manage.py runserver
 ```
 
 ### Instructions

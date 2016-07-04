@@ -1,8 +1,4 @@
-from alayatodo import app
-from flask_sqlalchemy import SQLAlchemy
-
-
-db = SQLAlchemy(app)
+from alayatodo import db
 
 
 class User(db.Model):
@@ -41,3 +37,7 @@ class Todo(db.Model):
 
     def __repr__(self):
         return '<Todo {0}>'.format(self.description)
+
+    def to_dict(self):
+        return {c.name: str(getattr(self, c.name))
+                for c in self.__table__.columns}

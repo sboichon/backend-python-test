@@ -1,4 +1,5 @@
 Flask
 Flask-SQLAlchemy
+Flask-Migrate
 Jinja2
 docopt
