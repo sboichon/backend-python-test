@@ -59,7 +59,7 @@ def logout():
 @app.route('/todo/<id>', methods=['GET'])
 @login_required
 def todo(id):
-    todo = Todo.query.filter_by(id=id).first()
+    todo = Todo.query.filter_by(id=id, user_id=session['user']['id']).first()
     if not todo:
         flash('Todo id=%s doesn\'t exist' % id)
         return redirect('/todo')
@@ -69,7 +69,7 @@ def todo(id):
 @app.route('/todo/<id>/json', methods=['GET'])
 @login_required
 def todo_json(id):
-    todo = Todo.query.filter_by(id=id).first()
+    todo = Todo.query.filter_by(id=id, user_id=session['user']['id']).first()
     if not todo:
         flash('Todo id=%s doesn\'t exist' % id)
         return redirect('/todo')
@@ -80,7 +80,7 @@ def todo_json(id):
 @login_required
 def todo_complete(id):
     is_completed = request.form.get('is_completed')
-    todo = Todo.query.filter_by(id=id).first()
+    todo = Todo.query.filter_by(id=id, user_id=session['user']['id']).first()
 
     if not todo:
         flash('Todo id=%s doesn\'t exist' % id)
@@ -100,7 +100,7 @@ def todo_complete(id):
 @app.route('/todo/', methods=['GET'])
 @login_required
 def todos():
-    todos = Todo.query.all()
+    todos = Todo.query.filter_by(user_id=session['user']['id']).all()
     return render_template('todos.html', todos=todos)
 
 
@@ -122,7 +122,7 @@ def todos_POST():
 @app.route('/todo/<id>', methods=['POST'])
 @login_required
 def todo_delete(id):
-    todo = Todo.query.filter_by(id=id).first()
+    todo = Todo.query.filter_by(id=id, user_id=session['user']['id']).first()
     db.session.delete(todo)
     db.session.commit()
 
