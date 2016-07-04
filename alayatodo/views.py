@@ -1,4 +1,4 @@
-from alayatodo import app
+from alayatodo import app, db
 from flask import (
     flash,
     redirect,
@@ -8,7 +8,7 @@ from flask import (
     )
 from functools import wraps
 
-from .models import db, User, Todo
+from .models import User, Todo
 
 
 def login_required(f):
