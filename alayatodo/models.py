@@ -1,8 +1,4 @@
-from alayatodo import app
-from flask_sqlalchemy import SQLAlchemy
-
-
-db = SQLAlchemy(app)
+from alayatodo import db
 
 
 class User(db.Model):
