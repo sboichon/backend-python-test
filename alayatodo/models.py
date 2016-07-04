@@ -41,3 +41,7 @@ class Todo(db.Model):
 
     def __repr__(self):
         return '<Todo {0}>'.format(self.description)
+
+    def to_dict(self):
+        return {c.name: str(getattr(self, c.name))
+                for c in self.__table__.columns}
