@@ -76,10 +76,23 @@ def todo_json(id):
     return jsonify(todo.to_dict())
 
 
-@app.route('/todo/<id>', methods=['PUT'])
+@app.route('/todo/<id>/complete', methods=['POST'])
 @login_required
-def todo_update(id):
+def todo_complete(id):
+    is_completed = request.form.get('is_completed')
     todo = Todo.query.filter_by(id=id).first()
+
+    if not todo:
+        flash('Todo id=%s doesn\'t exist' % id)
+        return redirect('/todo')
+
+    if is_completed is not None:
+        todo.is_completed = True
+    else:
+        todo.is_completed = False
+
+    db.session.commit()
+
     return render_template('todo.html', todo=todo)
 
 
