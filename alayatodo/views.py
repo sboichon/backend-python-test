@@ -1,5 +1,7 @@
 from alayatodo import app
 from flask import (
+    abort,
+    flash,
     g,
     redirect,
     render_template,
@@ -24,8 +26,7 @@ def login():
 def login_POST():
     username = request.form.get('username')
     password = request.form.get('password')
-
-    sql = "SELECT * FROM users WHERE username = '%s' AND password = '%s'";
+    sql = "SELECT * FROM users WHERE username = '%s' AND password = '%s'"
     cur = g.db.execute(sql % (username, password))
     user = cur.fetchone()
     if user:
@@ -65,6 +66,11 @@ def todos():
 def todos_POST():
     if not session.get('logged_in'):
         return redirect('/login')
+
+    if request.form.get('description', '') == '':
+        flash("You need to provide a description")
+        return redirect('/todo')
+
     g.db.execute(
         "INSERT INTO todos (user_id, description) VALUES ('%s', '%s')"
         % (session['user']['id'], request.form.get('description', ''))
