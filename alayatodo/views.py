@@ -1,6 +1,7 @@
 from alayatodo import app
 from flask import (
     flash,
+    jsonify,
     redirect,
     render_template,
     request,
@@ -60,6 +61,13 @@ def logout():
 def todo(id):
     todo = Todo.query.filter_by(id=id).first()
     return render_template('todo.html', todo=todo)
+
+
+@app.route('/todo/<id>/json', methods=['GET'])
+@login_required
+def todo_json(id):
+    todo = Todo.query.filter_by(id=id).first()
+    return jsonify(todo.to_dict())
 
 
 @app.route('/todo', methods=['GET'])
