@@ -1,5 +1,4 @@
 from alayatodo import app
-from .models import db, User, Todo
 from flask import (
     flash,
     redirect,
@@ -7,6 +6,19 @@ from flask import (
     request,
     session
     )
+from functools import wraps
+
+from .models import db, User, Todo
+
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('logged_in'):
+            flash('You need to be logged in')
+            return redirect('/login')
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 @app.route('/')
@@ -32,6 +44,7 @@ def login_POST():
         session['logged_in'] = True
         return redirect('/todo')
 
+    flash('Wrong username / password')
     return redirect('/login')
 
 
@@ -43,6 +56,7 @@ def logout():
 
 
 @app.route('/todo/<id>', methods=['GET'])
+@login_required
 def todo(id):
     todo = Todo.query.filter_by(id=id).first()
     return render_template('todo.html', todo=todo)
@@ -50,19 +64,16 @@ def todo(id):
 
 @app.route('/todo', methods=['GET'])
 @app.route('/todo/', methods=['GET'])
+@login_required
 def todos():
-    if not session.get('logged_in'):
-        return redirect('/login')
     todos = Todo.query.all()
     return render_template('todos.html', todos=todos)
 
 
 @app.route('/todo', methods=['POST'])
 @app.route('/todo/', methods=['POST'])
+@login_required
 def todos_POST():
-    if not session.get('logged_in'):
-        return redirect('/login')
-
     if request.form.get('description', '') == '':
         flash("You need to provide a description")
         return redirect('/todo')
@@ -75,10 +86,8 @@ def todos_POST():
 
 
 @app.route('/todo/<id>', methods=['POST'])
+@login_required
 def todo_delete(id):
-    if not session.get('logged_in'):
-        return redirect('/login')
-
     todo = Todo.query.filter_by(id=id).first()
     db.session.delete(todo)
     db.session.commit()
