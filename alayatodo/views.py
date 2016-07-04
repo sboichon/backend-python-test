@@ -60,6 +60,9 @@ def logout():
 @login_required
 def todo(id):
     todo = Todo.query.filter_by(id=id).first()
+    if not todo:
+        flash('Todo id=%s doesn\'t exist' % id)
+        return redirect('/todo')
     return render_template('todo.html', todo=todo)
 
 
@@ -67,7 +70,17 @@ def todo(id):
 @login_required
 def todo_json(id):
     todo = Todo.query.filter_by(id=id).first()
+    if not todo:
+        flash('Todo id=%s doesn\'t exist' % id)
+        return redirect('/todo')
     return jsonify(todo.to_dict())
+
+
+@app.route('/todo/<id>', methods=['PUT'])
+@login_required
+def todo_update(id):
+    todo = Todo.query.filter_by(id=id).first()
+    return render_template('todo.html', todo=todo)
 
 
 @app.route('/todo', methods=['GET'])
