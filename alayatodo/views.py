@@ -60,6 +60,9 @@ def logout():
 @login_required
 def todo(id):
     todo = Todo.query.filter_by(id=id).first()
+    if not todo:
+        flash('Todo id=%s doesn\'t exist' % id)
+        return redirect('/todo')
     return render_template('todo.html', todo=todo)
 
 
@@ -67,7 +70,30 @@ def todo(id):
 @login_required
 def todo_json(id):
     todo = Todo.query.filter_by(id=id).first()
+    if not todo:
+        flash('Todo id=%s doesn\'t exist' % id)
+        return redirect('/todo')
     return jsonify(todo.to_dict())
+
+
+@app.route('/todo/<id>/complete', methods=['POST'])
+@login_required
+def todo_complete(id):
+    is_completed = request.form.get('is_completed')
+    todo = Todo.query.filter_by(id=id).first()
+
+    if not todo:
+        flash('Todo id=%s doesn\'t exist' % id)
+        return redirect('/todo')
+
+    if is_completed is not None:
+        todo.is_completed = True
+    else:
+        todo.is_completed = False
+
+    db.session.commit()
+
+    return render_template('todo.html', todo=todo)
 
 
 @app.route('/todo', methods=['GET'])
