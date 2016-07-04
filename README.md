@@ -33,7 +33,8 @@ Credentials:
 virtualenv .
 bin/pip install -r requirements.txt
 bin/python main.py initdb
-bin/python main.py
+bin/. environ-dev.sh
+bin/flask run
 ```
 
 ### Instructions
