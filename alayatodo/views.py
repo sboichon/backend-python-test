@@ -1,4 +1,4 @@
-from alayatodo import app, db
+from alayatodo import app
 from flask import (
     flash,
     jsonify,
