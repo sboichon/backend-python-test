@@ -41,7 +41,7 @@ def login_POST():
     username = request.form.get('username')
     password = request.form.get('password')
 
-    user = User.query.filter_by(username=username, password=password).first()
+    user = User.get_by(username=username, password=password)
     if user:
         session['user'] = user.to_dict()
         session['logged_in'] = True
@@ -61,7 +61,7 @@ def logout():
 @app.route('/todo/<id>', methods=['GET'])
 @login_required
 def todo(id):
-    todo = Todo.query.filter_by(id=id, user_id=session['user']['id']).first()
+    todo = Todo.get_by(id=id, user_id=session['user']['id'])
     if not todo:
         flash('Todo id=%s doesn\'t exist' % id)
         return redirect('/todos/')
@@ -71,7 +71,7 @@ def todo(id):
 @app.route('/todo/<id>/json', methods=['GET'])
 @login_required
 def todo_json(id):
-    todo = Todo.query.filter_by(id=id, user_id=session['user']['id']).first()
+    todo = Todo.get_by(id=id, user_id=session['user']['id'])
     if not todo:
         flash('Todo id=%s doesn\'t exist' % id)
         return redirect('/todos/')
@@ -82,18 +82,16 @@ def todo_json(id):
 @login_required
 def todo_complete(id):
     is_completed = request.form.get('is_completed')
-    todo = Todo.query.filter_by(id=id, user_id=session['user']['id']).first()
+    todo = Todo.get_by(id=id, user_id=session['user']['id'])
 
     if not todo:
         flash('Todo id=%s doesn\'t exist' % id)
         return redirect('/todos/')
 
     if is_completed is not None:
-        todo.is_completed = True
+        todo.update(is_completed=True)
     else:
-        todo.is_completed = False
-
-    db.session.commit()
+        todo.update(is_completed=False)
 
     return render_template('todo.html', todo=todo)
 
@@ -102,7 +100,7 @@ def todo_complete(id):
 @app.route('/todos/<int:page>/', methods=['GET'])
 @login_required
 def todos(page):
-    todos = Todo.query.filter_by(
+    todos = Todo.filter_by(
         user_id=session['user']['id']).paginate(page, TODO_PER_PAGE)
     return render_template('todos.html', todos=todos)
 
@@ -115,18 +113,16 @@ def todos_POST():
         flash("You need to provide a description")
         return redirect('/todos/')
 
-    todo = Todo(user_id=session['user']['id'],
-                description=request.form['description'])
-    db.session.add(todo)
-    db.session.commit()
+    Todo(user_id=session['user']['id'],
+         description=request.form['description']).save()
+
     return redirect('/todos/')
 
 
 @app.route('/todo/<id>', methods=['POST'])
 @login_required
 def todo_delete(id):
-    todo = Todo.query.filter_by(id=id, user_id=session['user']['id']).first()
-    db.session.delete(todo)
-    db.session.commit()
+    todo = Todo.get_by(id=id, user_id=session['user']['id'])
+    todo.delete()
 
     return redirect('/todos/')
