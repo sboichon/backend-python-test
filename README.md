@@ -40,7 +40,7 @@ bin/python manage.py runserver
 ### Run the tests
 ```sh
 bin/pip install -r requirements-test.txt
-bin/python -m unittest discover -s alayatodo/tests/
+bin/python manage.py run_test
 ```
 
 ### Instructions

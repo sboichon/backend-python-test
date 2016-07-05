@@ -12,11 +12,9 @@ class BaseTestCase(TestCase):
         return app
 
     def setUp(self):
-        import ipdb; ipdb.set_trace()
         db.create_all()
 
     def tearDown(self):
-        import ipdb; ipdb.set_trace()
         db.session.remove()
         db.drop_all()
 
