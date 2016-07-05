@@ -11,6 +11,8 @@ from functools import wraps
 
 from .models import User, Todo
 
+TODO_PER_PAGE = 6
+
 
 def login_required(f):
     @wraps(f)
@@ -43,7 +45,7 @@ def login_POST():
     if user:
         session['user'] = user.to_dict()
         session['logged_in'] = True
-        return redirect('/todo')
+        return redirect('/todos/')
 
     flash('Wrong username / password')
     return redirect('/login')
@@ -62,7 +64,7 @@ def todo(id):
     todo = Todo.query.filter_by(id=id, user_id=session['user']['id']).first()
     if not todo:
         flash('Todo id=%s doesn\'t exist' % id)
-        return redirect('/todo/')
+        return redirect('/todos/')
     return render_template('todo.html', todo=todo)
 
 
@@ -72,7 +74,7 @@ def todo_json(id):
     todo = Todo.query.filter_by(id=id, user_id=session['user']['id']).first()
     if not todo:
         flash('Todo id=%s doesn\'t exist' % id)
-        return redirect('/todo/')
+        return redirect('/todos/')
     return jsonify(todo.to_dict())
 
 
@@ -84,7 +86,7 @@ def todo_complete(id):
 
     if not todo:
         flash('Todo id=%s doesn\'t exist' % id)
-        return redirect('/todo')
+        return redirect('/todos/')
 
     if is_completed is not None:
         todo.is_completed = True
@@ -96,11 +98,12 @@ def todo_complete(id):
     return render_template('todo.html', todo=todo)
 
 
-@app.route('/todo', methods=['GET'])
-@app.route('/todo/', methods=['GET'])
+@app.route('/todos/', defaults={'page': 1}, methods=['GET'])
+@app.route('/todos/<int:page>/', methods=['GET'])
 @login_required
-def todos():
-    todos = Todo.query.filter_by(user_id=session['user']['id']).all()
+def todos(page):
+    todos = Todo.query.filter_by(
+        user_id=session['user']['id']).paginate(page, TODO_PER_PAGE)
     return render_template('todos.html', todos=todos)
 
 
@@ -110,13 +113,13 @@ def todos():
 def todos_POST():
     if request.form.get('description', '') == '':
         flash("You need to provide a description")
-        return redirect('/todo')
+        return redirect('/todos/')
 
     todo = Todo(user_id=session['user']['id'],
                 description=request.form['description'])
     db.session.add(todo)
     db.session.commit()
-    return redirect('/todo/')
+    return redirect('/todos/')
 
 
 @app.route('/todo/<id>', methods=['POST'])
@@ -126,4 +129,4 @@ def todo_delete(id):
     db.session.delete(todo)
     db.session.commit()
 
-    return redirect('/todo/')
+    return redirect('/todos/')

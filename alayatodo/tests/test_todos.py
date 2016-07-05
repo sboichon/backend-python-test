@@ -14,11 +14,14 @@ class TodoViewsTests(BaseTestCase):
         self.assert_context("todo", self.todo_1)
 
     def test_get_todos(self):
-        self.request_as_logged_in_user(self.user_1,
-                                       url_for('todos'),
-                                       'GET')
+        self.request_as_logged_in_user(
+            self.user_1,
+            url_for('todos'),
+            'GET')
+
         self.assert_template_used('todos.html')
-        self.assert_context("todos", [self.todo_1])
+        todos = self.get_context_variable('todos')
+        self.assertEquals(todos.items, [self.todo_1])
 
     def test_get_todo_json(self):
         response = self.request_as_logged_in_user(
