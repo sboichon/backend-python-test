@@ -37,6 +37,12 @@ bin/python manage.py create_fixtures
 bin/python manage.py runserver
 ```
 
+### Run the tests
+```sh
+bin/pip install -r requirements-test.txt
+bin/python -m unittest discover -s alayatodo/tests/
+```
+
 ### Instructions
 
 You will be asked to improve the code of this app with the following tasks.

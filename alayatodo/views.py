@@ -62,7 +62,7 @@ def todo(id):
     todo = Todo.query.filter_by(id=id, user_id=session['user']['id']).first()
     if not todo:
         flash('Todo id=%s doesn\'t exist' % id)
-        return redirect('/todo')
+        return redirect('/todo/')
     return render_template('todo.html', todo=todo)
 
 

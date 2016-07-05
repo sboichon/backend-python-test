@@ -1,6 +1,4 @@
 class Config(object):
-    DATABASE = '/tmp/alayatodo.db'
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + DATABASE
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DEBUG = False
     TESTING = False
@@ -11,7 +9,11 @@ class Config(object):
 
 class DevelopmentConfig(Config):
     DEBUG = True
+    DATABASE = '/tmp/alayatodo.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + DATABASE
 
 
 class TestingConfig(Config):
     TESTING = True
+    DATABASE = '/tmp/alayatodo_test.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + DATABASE
