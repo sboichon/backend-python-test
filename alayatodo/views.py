@@ -72,7 +72,7 @@ def todo_json(id):
     todo = Todo.query.filter_by(id=id, user_id=session['user']['id']).first()
     if not todo:
         flash('Todo id=%s doesn\'t exist' % id)
-        return redirect('/todo')
+        return redirect('/todo/')
     return jsonify(todo.to_dict())
 
 
@@ -116,7 +116,7 @@ def todos_POST():
                 description=request.form['description'])
     db.session.add(todo)
     db.session.commit()
-    return redirect('/todo')
+    return redirect('/todo/')
 
 
 @app.route('/todo/<id>', methods=['POST'])
@@ -126,4 +126,4 @@ def todo_delete(id):
     db.session.delete(todo)
     db.session.commit()
 
-    return redirect('/todo')
+    return redirect('/todo/')
